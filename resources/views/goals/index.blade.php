@@ -37,26 +37,41 @@
     @foreach($goals as $goal)
         <div class="border p-4 mb-3 rounded shadow">
             <h2 class="text-xl font-semibold">{{ $goal->title }}</h2>
+
+            <form method="GET" action="{{ route('goals.export.pdf') }}">
+                <input type="date" name="start_date" required>
+                <input type="date" name="end_date" required>
+                <button class="bg-blue-500 text-white px-3 py-1 rounded" type="submit">📄 Exportar PDF</button>
+            </form>
+
+            <form method="GET" action="{{ route('goals.export.csv') }}" class="mt-2">
+                <input type="date" name="start_date" required>
+                <input type="date" name="end_date" required>
+                <button class="bg-green-500 text-white px-3 py-1 rounded" type="submit">📑 Exportar CSV</button>
+            </form>
             <p class="text-sm text-gray-500">Total concluída: {{ $goal->progress->count() }}x</p>
-            <p class="text-sm text-gray-600 mb-2">{{ $goal->description }}</p>
+            <p class="text-sm text-gray-500 mb-2">Descrição: {{ $goal->description }}</p>
             <p class="text-sm text-gray-500">Frequência: {{ ucfirst($goal->frequency) }}</p>
 
             @php
-                $hoje = Carbon::today();
+                $agora = \Carbon\Carbon::now();
                 $ultimaConclusao = $goal->progress->sortByDesc('completed_at')->first();
                 $marcado = false;
 
                 if ($ultimaConclusao) {
-                    $data = Carbon::parse($ultimaConclusao->completed_at);
+                    $data = \Carbon\Carbon::parse($ultimaConclusao->completed_at);
+
                     switch ($goal->frequency) {
                         case 'daily':
-                            $marcado = $data->isSameDay($hoje);
+                            $marcado = $data->isToday() || $data->greaterThanOrEqualTo($agora->copy()->startOfDay());
                             break;
+
                         case 'weekly':
-                            $marcado = $data->isSameWeek($hoje);
+                            $marcado = $data->greaterThanOrEqualTo($agora->copy()->startOfWeek());
                             break;
+
                         case 'monthly':
-                            $marcado = $data->isSameMonth($hoje);
+                            $marcado = $data->greaterThanOrEqualTo($agora->copy()->startOfMonth());
                             break;
                     }
                 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,8 +22,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/goals/create', [GoalController::class, 'create'])->name('goals.create');
     Route::post('/goals', [GoalController::class, 'store'])->name('goals.store');
     Route::post('/goals/{goal}/complete', [GoalController::class, 'markComplete'])->name('goals.complete');
-});
+    Route::get('/goals/export/pdf', [GoalController::class, 'exportPdf'])->name('goals.export.pdf');
+    Route::get('/goals/export/csv', [GoalController::class, 'exportCsv'])->name('goals.export.csv');});
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+
+
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/export/csv', [ExportController::class, 'csv'])->name('export.csv');
+//     Route::get('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
+// });
+
 
 require __DIR__.'/auth.php';
