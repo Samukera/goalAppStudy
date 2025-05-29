@@ -93,7 +93,7 @@
                 <h3 class="font-semibold text-sm text-gray-700">Histórico:</h3>
                 <ul class="list-disc pl-5 text-sm text-gray-600">
                     @forelse($goal->progress->sortByDesc('completed_at') as $progress)
-                        <li>{{ Carbon::parse($progress->completed_at)->format('d/m/Y') }}</li>
+                    <li>{{ \Carbon\Carbon::parse($progress->completed_at)->format('d/m/Y H:i') }}</li>
                     @empty
                         <li>Sem registros ainda.</li>
                     @endforelse
